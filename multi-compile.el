@@ -347,11 +347,12 @@
   (locate-dominating-file (buffer-file-name) name))
 
 ;;;###autoload
-(defun multi-compile-run ()
+(defun multi-compile-run (&optional comint)
   "Choice target and start compile."
   (interactive)
   (let* ((template (multi-compile--get-command-template))
          (command (or (car-safe template) template))
+         (user-interaction (if comint comint nil))
          ;; The command may be either a string or a list of strings to be joined by a space.
          ;; The canonical form is just a string where any joining has already been performed.
          (canonical-command (string-join (-flatten command) " "))
@@ -362,7 +363,8 @@
                                      (funcall multi-compile-default-directory-function))
                                 default-directory)))
     (compile
-     (multi-compile--fill-template canonical-command))))
+        (multi-compile--fill-template canonical-command) user-interaction)
+      ))
 
 (multi-compile--load-hostory)
 
